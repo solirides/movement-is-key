@@ -1,0 +1,180 @@
+[gd_scene load_steps=26 format=3 uid="uid://dq2rbfw18ulbr"]
+
+[ext_resource type="PackedScene" uid="uid://b7qmlmckh7ity" path="res://scenes/characters/player.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://1qnj20l0da5t" path="res://scenes/characters/enemy.tscn" id="2_cu0sf"]
+[ext_resource type="Texture2D" uid="uid://nnpnsev2ax6t" path="res://assets/textures/levels/64x64.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://c57xcd1waw6y" path="res://assets/environments/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="3_sp7nl"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_103hx"]
+bounce = 0.5
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_get86"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_xag7b"]
+noise_type = 0
+frequency = 0.0439
+fractal_octaves = 4
+fractal_gain = 0.725
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dwvee"]
+seamless = true
+noise = SubResource("FastNoiseLite_xag7b")
+
+[sub_resource type="Gradient" id="Gradient_e4cin"]
+offsets = PackedFloat32Array(0.163934, 0.918033)
+colors = PackedColorArray(0.277528, 0.277528, 0.277528, 1, 0.370364, 0.370364, 0.370364, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_lr5cf"]
+noise_type = 0
+frequency = 0.0248
+fractal_octaves = 4
+fractal_gain = 0.675
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_t863o"]
+seamless = true
+color_ramp = SubResource("Gradient_e4cin")
+noise = SubResource("FastNoiseLite_lr5cf")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_641kn"]
+metallic = 1.0
+roughness_texture = SubResource("NoiseTexture2D_t863o")
+normal_enabled = true
+normal_scale = 0.08
+normal_texture = SubResource("NoiseTexture2D_dwvee")
+refraction_enabled = true
+refraction_scale = 0.29
+
+[sub_resource type="SphereMesh" id="SphereMesh_pg5mg"]
+
+[sub_resource type="CapsuleShape3D" id="1"]
+
+[sub_resource type="StandardMaterial3D" id="8"]
+albedo_color = Color(0.94902, 0.737255, 0, 0.556863)
+metallic = 0.29
+roughness = 0.11
+refraction_enabled = true
+refraction_scale = 0.29
+
+[sub_resource type="CapsuleMesh" id="5"]
+
+[sub_resource type="BoxMesh" id="6"]
+
+[sub_resource type="StandardMaterial3D" id="7"]
+
+[sub_resource type="StandardMaterial3D" id="10"]
+albedo_texture = ExtResource("3")
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="2"]
+
+[sub_resource type="PrismMesh" id="9"]
+size = Vector3(6, 2, 2)
+
+[sub_resource type="PrismMesh" id="11"]
+size = Vector3(30, 12, 16)
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_fb1oj"]
+panorama = ExtResource("3_sp7nl")
+
+[sub_resource type="Sky" id="Sky_wiqww"]
+sky_material = SubResource("PanoramaSkyMaterial_fb1oj")
+
+[sub_resource type="Environment" id="3"]
+background_mode = 2
+sky = SubResource("Sky_wiqww")
+ambient_light_color = Color(0.568627, 0.54902, 0.54902, 1)
+ambient_light_sky_contribution = 0.72
+ambient_light_energy = 0.15
+tonemap_mode = 2
+tonemap_white = 2.22
+glow_enabled = true
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Player" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 16)
+
+[node name="Enemy" parent="." instance=ExtResource("2_cu0sf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+
+[node name="RigidBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.01711, 2, 5.35394)
+collision_mask = 257
+physics_material_override = SubResource("PhysicsMaterial_103hx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
+shape = SubResource("SphereShape3D_get86")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D"]
+transform = Transform3D(1, -0.000244346, 0, 0.000244346, 1, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_641kn")
+mesh = SubResource("SphereMesh_pg5mg")
+
+[node name="RigidBody3D2" type="RigidBody3D" parent="."]
+transform = Transform3D(0.923063, 0.38465, 0, -0.38465, 0.923063, 0, 0, 0, 1, -4.23295, 0.417408, 5.08802)
+collision_mask = 257
+physics_material_override = SubResource("PhysicsMaterial_103hx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D2"]
+shape = SubResource("1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D2"]
+material_override = SubResource("8")
+mesh = SubResource("5")
+
+[node name="CSGMesh3D" type="CSGMesh3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+mesh = SubResource("6")
+material = SubResource("7")
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="."]
+material_override = SubResource("10")
+use_collision = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, -6.5, 0)
+size = Vector3(200, 4, 432)
+material = SubResource("2")
+
+[node name="CSGMesh3D" type="CSGMesh3D" parent="CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, -7)
+mesh = SubResource("9")
+
+[node name="CSGMesh2" type="CSGMesh3D" parent="CSGCombiner3D"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -5, -3, 42)
+mesh = SubResource("11")
+
+[node name="CSGBox2" type="CSGBox3D" parent="CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, 27)
+size = Vector3(1, 14, 76)
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 20, 63)
+radius = 11.0
+height = 52.0
+
+[node name="CSGCombiner3D2" type="CSGCombiner3D" parent="CSGCombiner3D"]
+operation = 2
+
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="CSGCombiner3D/CSGCombiner3D2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 22, 63)
+radius = 10.0
+height = 52.0
+sides = 32
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D/CSGCombiner3D2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, -0.5, 51)
+size = Vector3(7, 8, 5)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("3")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(0.82087, 0.32155, -0.471993, 0, 0.826442, 0.563021, 0.571115, -0.462167, 0.678402, 0, 11, 0)
+shadow_enabled = true
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -1, 5)
+light_color = Color(0.188235, 0.917647, 0.901961, 1)
+shadow_enabled = true
+omni_range = 42.356

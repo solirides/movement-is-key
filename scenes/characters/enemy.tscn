@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://1qnj20l0da5t"]
+
+[ext_resource type="Texture2D" uid="uid://nnpnsev2ax6t" path="res://assets/textures/levels/64x64.png" id="1_ystsp"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_qpapr"]
+friction = 0.0
+bounce = 0.5
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7723a"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t3adc"]
+albedo_color = Color(1, 0.501961, 0, 1)
+albedo_texture = ExtResource("1_ystsp")
+refraction_scale = 0.29
+uv1_triplanar = true
+texture_filter = 0
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_xgovv"]
+
+[node name="Enemy" type="RigidBody3D"]
+collision_mask = 257
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+physics_material_override = SubResource("PhysicsMaterial_qpapr")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_7723a")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_t3adc")
+mesh = SubResource("CapsuleMesh_xgovv")

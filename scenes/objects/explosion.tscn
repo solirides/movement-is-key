@@ -1,0 +1,64 @@
+[gd_scene load_steps=8 format=3 uid="uid://b1v74s5getpvu"]
+
+[ext_resource type="Script" path="res://scripts/objects/explosion.gd" id="1_ipmvx"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jcpsa"]
+emission_enabled = true
+emission = Color(0.87451, 0.815686, 0.403922, 1)
+emission_energy_multiplier = 2.0
+billboard_mode = 1
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xbg4r"]
+spread = 180.0
+initial_velocity_min = 24.1
+initial_velocity_max = 24.1
+damping_min = 4.819
+damping_max = 4.819
+turbulence_enabled = true
+turbulence_influence_min = 0.045
+turbulence_influence_max = 0.045
+
+[sub_resource type="QuadMesh" id="QuadMesh_3xi2o"]
+size = Vector2(0.1, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11gb3"]
+albedo_color = Color(0.988235, 0.776471, 0.47451, 1)
+emission_enabled = true
+emission = Color(0.92549, 0.584314, 0.509804, 1)
+emission_energy_multiplier = 3.0
+disable_receive_shadows = true
+billboard_mode = 1
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_yyi52"]
+emission_shape = 1
+emission_sphere_radius = 1.0
+spread = 180.0
+initial_velocity_min = 48.2
+initial_velocity_max = 48.2
+radial_accel_min = -100.0
+radial_accel_max = -100.0
+tangential_accel_min = 4.81
+tangential_accel_max = 19.27
+turbulence_enabled = true
+turbulence_influence_min = 0.043
+turbulence_influence_max = 0.043
+
+[sub_resource type="QuadMesh" id="QuadMesh_ct486"]
+size = Vector2(0.2, 0.2)
+
+[node name="Explosion" type="Node3D"]
+script = ExtResource("1_ipmvx")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+material_override = SubResource("StandardMaterial3D_jcpsa")
+amount = 20
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_xbg4r")
+draw_pass_1 = SubResource("QuadMesh_3xi2o")
+
+[node name="GPUParticles3D2" type="GPUParticles3D" parent="."]
+material_override = SubResource("StandardMaterial3D_11gb3")
+amount = 16
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_yyi52")
+draw_pass_1 = SubResource("QuadMesh_ct486")

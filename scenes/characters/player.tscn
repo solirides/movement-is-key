@@ -1,0 +1,100 @@
+[gd_scene load_steps=8 format=3 uid="uid://b7qmlmckh7ity"]
+
+[ext_resource type="Script" path="res://scripts/characters/player.gd" id="1"]
+
+[sub_resource type="PhysicsMaterial" id="4"]
+friction = 0.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nsicb"]
+height = 1.5
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8q3ky"]
+height = 1.5
+
+[sub_resource type="CapsuleMesh" id="2"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ojrid"]
+size = Vector3(3, 3, 5)
+
+[sub_resource type="CylinderShape3D" id="5"]
+height = 1.0
+radius = 0.2
+
+[node name="Player" type="RigidBody3D" node_paths=PackedStringArray("camera_pivot", "camera", "feet_collision", "aim", "feet_area", "force_area", "crouch_timer")]
+collision_layer = 256
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+physics_material_override = SubResource("4")
+gravity_scale = 0.0
+can_sleep = false
+continuous_cd = true
+max_contacts_reported = 1
+contact_monitor = true
+script = ExtResource("1")
+air_control = 1.0
+camera_pivot = NodePath("CameraPivot")
+camera = NodePath("CameraPivot/Camera3D")
+feet_collision = NodePath("FeetCollision")
+aim = NodePath("CameraPivot/Camera3D/Aim")
+feet_area = NodePath("FeetArea")
+force_area = NodePath("CameraPivot/Camera3D/Force")
+crouch_timer = NodePath("CrouchTimer")
+
+[node name="CrouchTimer" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.1
+one_shot = true
+
+[node name="Crouching" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+shape = SubResource("CapsuleShape3D_nsicb")
+
+[node name="Standing" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+shape = SubResource("CapsuleShape3D_8q3ky")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("2")
+
+[node name="CameraPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
+far = 1000.0
+
+[node name="Aim" type="RayCast3D" parent="CameraPivot/Camera3D"]
+target_position = Vector3(0, 0, -10)
+
+[node name="Crosshair" type="ColorRect" parent="CameraPivot/Camera3D"]
+custom_minimum_size = Vector2(4, 4)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 1, 0.729412, 1)
+
+[node name="Force" type="Area3D" parent="CameraPivot/Camera3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CameraPivot/Camera3D/Force"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+shape = SubResource("BoxShape3D_ojrid")
+
+[node name="FeetCollision" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+target_position = Vector3(0, -0.2, 0)
+
+[node name="FeetArea" type="Area3D" parent="."]
+collision_layer = 16
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FeetArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
+shape = SubResource("5")
