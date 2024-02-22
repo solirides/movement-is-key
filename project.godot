@@ -65,6 +65,8 @@ crouch={
 [layer_names]
 
 3d_physics/layer_9="Player"
+3d_physics/layer_13="Worm"
+3d_physics/layer_14="Worm Damage"
 
 [physics]
 

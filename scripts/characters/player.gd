@@ -1,11 +1,13 @@
 extends RigidBody3D
 
 
+var health:float = 100
 var movement_state = 0
 var jump_cooldown = 0
 var time_delta = 0
+var last_damage = 0
 
-
+@export_category("Movement")
 @export var ground_friction:float = 0.9
 @export var air_friction:float = 1
 @export var mouse_sensitivity:float = 0.1
@@ -19,6 +21,7 @@ var time_delta = 0
 @export var gravity = 38
 @export var jump_velocity = Vector3(0,12,0)
 
+@export_category("Nodes")
 @export var camera_pivot:Node = null
 @export var camera:Camera3D = null
 @export var feet_collision:RayCast3D = null
@@ -26,6 +29,11 @@ var time_delta = 0
 @export var feet_area:Area3D = null
 @export var force_area:Area3D = null
 @export var crouch_timer:Timer = null
+
+@export_category("Damage")
+@export var i_frame:float = 1
+@export var base_health:float = 100
+
 
 var movement_speed:float = base_speed
 var knockback_mult:float = base_knockback
@@ -45,7 +53,7 @@ func _physics_process(delta):
 	time_delta = delta
 	jump_cooldown = max(0, jump_cooldown - delta)
 	
-	
+	last_damage += delta
 #	velocity = lerp(velocity * delta, velocity, acceleration_speed * delta)
 #	if feet_collision.is_colliding():
 #		print("collide")
@@ -59,9 +67,9 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("secondary"):
 		if force_area.has_overlapping_bodies():
 			for object in force_area.get_overlapping_bodies():
-				if object is RigidBody3D:
+				if object is RigidBody3D or object is PhysicalBone3D:
 					var offset = object.get_global_transform().origin - camera.get_global_transform().origin
-					var magnitude = max(0, 10 - offset.length()**1.5 ) * 2.6
+					var magnitude = max(0, 10 - offset.length()**1.5 ) * 3.0
 					object.apply_central_impulse(magnitude * offset.normalized())
 					print(object)
 				
@@ -102,6 +110,12 @@ func _physics_process(delta):
 		#$Standing.disabled = false
 		#$Crouching.disabled = true
 	#print(velocity * delta)
+	
+	for object in get_colliding_bodies():
+		if object.collision_layer & (1 << 12):
+			pass
+			#print(object.collision_layer)
+			#print(1 << 12)
 	
 #	print("pos " + str(self.translation))
 	
@@ -220,3 +234,7 @@ func abs_decrease(value:float, rate:float):
 	else:
 		return min(0, value + rate)
 	
+
+func damage(hp:float):
+	if last_damage >= i_frame:
+		health -= hp
