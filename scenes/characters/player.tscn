@@ -1,6 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://b7qmlmckh7ity"]
+[gd_scene load_steps=10 format=3 uid="uid://b7qmlmckh7ity"]
 
 [ext_resource type="Script" path="res://scripts/characters/player.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/characters/GUI.gd" id="2_cslfr"]
+[ext_resource type="Theme" uid="uid://bqcqt4hbus1ph" path="res://assets/themes/bars.tres" id="2_ogfib"]
 
 [sub_resource type="PhysicsMaterial" id="4"]
 friction = 0.0
@@ -70,21 +72,6 @@ far = 1000.0
 target_position = Vector3(0, 0, -10)
 collision_mask = 4097
 
-[node name="Crosshair" type="ColorRect" parent="CameraPivot/Camera3D"]
-custom_minimum_size = Vector2(4, 4)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -2.0
-offset_top = -2.0
-offset_right = 2.0
-offset_bottom = 2.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 1, 0.729412, 1)
-
 [node name="Force" type="Area3D" parent="CameraPivot/Camera3D"]
 collision_layer = 0
 collision_mask = 4097
@@ -103,3 +90,44 @@ collision_layer = 16
 [node name="CollisionShape3D" type="CollisionShape3D" parent="FeetArea"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 shape = SubResource("5")
+
+[node name="GUI" type="CanvasLayer" parent="." node_paths=PackedStringArray("health_bar", "player")]
+script = ExtResource("2_cslfr")
+health_bar = NodePath("BottomLeft/HealthBar")
+player = NodePath("..")
+
+[node name="Crosshair" type="ColorRect" parent="GUI"]
+custom_minimum_size = Vector2(4, 4)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 1, 0.729412, 1)
+
+[node name="BottomLeft" type="Control" parent="GUI"]
+layout_mode = 3
+anchor_top = 1.0
+anchor_right = 0.3
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -145.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HealthBar" type="ProgressBar" parent="GUI/BottomLeft"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+offset_bottom = 10.0
+grow_horizontal = 2
+theme = ExtResource("2_ogfib")
+value = 50.0
+show_percentage = false

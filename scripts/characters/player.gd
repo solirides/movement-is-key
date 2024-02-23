@@ -6,6 +6,7 @@ var movement_state = 0
 var jump_cooldown = 0
 var time_delta = 0
 var last_damage = 0
+var last_heal = 0
 
 @export_category("Movement")
 @export var ground_friction:float = 0.9
@@ -54,6 +55,10 @@ func _physics_process(delta):
 	jump_cooldown = max(0, jump_cooldown - delta)
 	
 	last_damage += delta
+	last_heal += delta
+	if last_damage > 4 and last_heal > 0.2:
+		heal(1)
+	
 #	velocity = lerp(velocity * delta, velocity, acceleration_speed * delta)
 #	if feet_collision.is_colliding():
 #		print("collide")
@@ -113,7 +118,7 @@ func _physics_process(delta):
 	
 	for object in get_colliding_bodies():
 		if object.collision_layer & (1 << 12):
-			pass
+			damage(20)
 			#print(object.collision_layer)
 			#print(1 << 12)
 	
@@ -237,4 +242,10 @@ func abs_decrease(value:float, rate:float):
 
 func damage(hp:float):
 	if last_damage >= i_frame:
+		last_damage = 0
 		health -= hp
+
+func heal(hp:float):
+	last_heal = 0
+	health += hp
+

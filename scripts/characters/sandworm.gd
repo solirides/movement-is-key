@@ -56,7 +56,7 @@ func _physics_process(delta):
 				current_state = State.RETREAT
 		State.RETREAT:
 			gravity = 2
-			core.apply_central_impulse((-9 - core.global_position.y) * Vector3(0, 1, 0) * 3)
+			core.apply_central_impulse(signf(-9 - core.global_position.y) * Vector3(0, 1, 0) * 6)
 			if state_time > 4 and is_underground():
 				state_time = 0
 				current_state = State.TRACK
@@ -112,11 +112,13 @@ func _physics_process(delta):
 			#print(bone.angular_velocity)
 			var s = bone.angular_velocity.length()
 			if s > max_speed:
-				bone.angular_velocity = bone.angular_velocity.normalized() * max_speed / 2
+				#bone.angular_velocity = bone.angular_velocity.normalized() * max_speed / 2
+				skeleton.reset_bone_poses()
 				print("too fast")
 			var v = bone.linear_velocity.length()
 			if v > max_speed:
-				bone.linear_velocity = bone.linear_velocity.normalized() * max_speed / 2
+				#bone.linear_velocity = bone.linear_velocity.normalized() * max_speed / 2
+				skeleton.reset_bone_poses()
 				print("too fast")
 	
 	impulse = Vector3(0, 0, 0)
