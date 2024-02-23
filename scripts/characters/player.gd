@@ -69,7 +69,10 @@ func _physics_process(delta):
 #	print(feet_collision.is_colliding()
 	#apply_central_force(Vector3.DOWN * gravity * delta)
 	
-	if Input.is_action_just_pressed("secondary"):
+	if Input.is_action_just_pressed("open_instance"):
+		OS.create_instance([])
+	
+	if Input.is_action_just_pressed("primary"):
 		if force_area.has_overlapping_bodies():
 			for object in force_area.get_overlapping_bodies():
 				if object is RigidBody3D or object is PhysicalBone3D:
@@ -88,6 +91,8 @@ func _physics_process(delta):
 			var a = explosion.instantiate()
 			get_tree().root.add_child(a)
 			a.position = aim.get_collision_point()
+			
+			
 	
 	if Input.is_action_pressed("crouch"):
 		#$Standing.disabled = true
@@ -118,7 +123,7 @@ func _physics_process(delta):
 	
 	for object in get_colliding_bodies():
 		if object.collision_layer & (1 << 12):
-			damage(20)
+			damage(30)
 			#print(object.collision_layer)
 			#print(1 << 12)
 	

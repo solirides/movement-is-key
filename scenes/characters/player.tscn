@@ -91,9 +91,10 @@ collision_layer = 16
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 shape = SubResource("5")
 
-[node name="GUI" type="CanvasLayer" parent="." node_paths=PackedStringArray("health_bar", "player")]
+[node name="GUI" type="CanvasLayer" parent="." node_paths=PackedStringArray("health_bar", "speed", "player")]
 script = ExtResource("2_cslfr")
 health_bar = NodePath("BottomLeft/HealthBar")
+speed = NodePath("BottomLeft/Speed")
 player = NodePath("..")
 
 [node name="Crosshair" type="ColorRect" parent="GUI"]
@@ -111,8 +112,8 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 1, 0.729412, 1)
 
-[node name="BottomLeft" type="Control" parent="GUI"]
-layout_mode = 3
+[node name="BottomLeft" type="VBoxContainer" parent="GUI"]
+anchors_preset = -1
 anchor_top = 1.0
 anchor_right = 0.3
 anchor_bottom = 1.0
@@ -121,13 +122,14 @@ offset_top = -145.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="Speed" type="Label" parent="GUI/BottomLeft"]
+layout_mode = 2
+theme = ExtResource("2_ogfib")
+text = "placeholder"
+
 [node name="HealthBar" type="ProgressBar" parent="GUI/BottomLeft"]
 custom_minimum_size = Vector2(10, 10)
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 1.0
-offset_bottom = 10.0
-grow_horizontal = 2
+layout_mode = 2
 theme = ExtResource("2_ogfib")
 value = 50.0
 show_percentage = false
