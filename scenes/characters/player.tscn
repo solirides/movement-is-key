@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://b7qmlmckh7ity"]
+[gd_scene load_steps=13 format=3 uid="uid://b7qmlmckh7ity"]
 
 [ext_resource type="Script" path="res://scripts/characters/player.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/characters/GUI.gd" id="2_cslfr"]
+[ext_resource type="PackedScene" uid="uid://xko8lr7b8c8i" path="res://assets/models/spade/rusted_spade_01_1k.gltf" id="2_leesx"]
 [ext_resource type="Theme" uid="uid://bqcqt4hbus1ph" path="res://assets/themes/bars.tres" id="2_ogfib"]
 
 [sub_resource type="PhysicsMaterial" id="4"]
@@ -22,9 +23,21 @@ size = Vector3(3, 3, 5)
 height = 1.0
 radius = 0.2
 
-[node name="Player" type="RigidBody3D" node_paths=PackedStringArray("camera_pivot", "camera", "feet_collision", "aim", "feet_area", "force_area", "crouch_timer")]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_kosy1"]
+blend_mode = 3
+light_mode = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vgqe0"]
+bg_color = Color(0.517647, 0.184314, 0.960784, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="Player" type="RigidBody3D" node_paths=PackedStringArray("camera_pivot", "camera", "feet_collision", "aim", "feet_area", "melee_area", "crouch_timer", "weapons_pivot") groups=["characters"]]
 collision_layer = 256
 collision_mask = 4097
+collision_priority = 10.0
 axis_lock_angular_x = true
 axis_lock_angular_y = true
 axis_lock_angular_z = true
@@ -41,8 +54,9 @@ camera = NodePath("CameraPivot/Camera3D")
 feet_collision = NodePath("FeetCollision")
 aim = NodePath("CameraPivot/Camera3D/Aim")
 feet_area = NodePath("FeetArea")
-force_area = NodePath("CameraPivot/Camera3D/Force")
+melee_area = NodePath("CameraPivot/Camera3D/MeleeArea")
 crouch_timer = NodePath("CrouchTimer")
+weapons_pivot = NodePath("WeaponsPivot")
 
 [node name="CrouchTimer" type="Timer" parent="."]
 process_callback = 0
@@ -65,18 +79,18 @@ mesh = SubResource("2")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot"]
-fov = 90.0
+fov = 100.0
 far = 1000.0
 
 [node name="Aim" type="RayCast3D" parent="CameraPivot/Camera3D"]
-target_position = Vector3(0, 0, -10)
+target_position = Vector3(0, 0, -200)
 collision_mask = 4097
 
-[node name="Force" type="Area3D" parent="CameraPivot/Camera3D"]
+[node name="MeleeArea" type="Area3D" parent="CameraPivot/Camera3D"]
 collision_layer = 0
 collision_mask = 4097
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CameraPivot/Camera3D/Force"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CameraPivot/Camera3D/MeleeArea"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
 shape = SubResource("BoxShape3D_ojrid")
 
@@ -91,13 +105,20 @@ collision_layer = 16
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 shape = SubResource("5")
 
-[node name="GUI" type="CanvasLayer" parent="." node_paths=PackedStringArray("health_bar", "speed", "player")]
+[node name="WeaponsPivot" type="Node3D" parent="."]
+
+[node name="Spade" parent="WeaponsPivot" instance=ExtResource("2_leesx")]
+transform = Transform3D(-1.38089, -0.0383605, -1.44626, -1.21244, -1.06017, 1.18576, -0.789383, 1.69545, 0.708737, 0.685056, -0.428811, -0.639858)
+
+[node name="GUI" type="CanvasLayer" parent="." node_paths=PackedStringArray("health_bar", "boss_bar", "speed", "player")]
 script = ExtResource("2_cslfr")
 health_bar = NodePath("BottomLeft/HealthBar")
+boss_bar = NodePath("Control/BossBar")
 speed = NodePath("BottomLeft/Speed")
 player = NodePath("..")
 
 [node name="Crosshair" type="ColorRect" parent="GUI"]
+material = SubResource("CanvasItemMaterial_kosy1")
 custom_minimum_size = Vector2(4, 4)
 anchors_preset = 8
 anchor_left = 0.5
@@ -110,7 +131,7 @@ offset_right = 2.0
 offset_bottom = 2.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 1, 0.729412, 1)
+color = Color(0.721569, 1, 0.807843, 1)
 
 [node name="BottomLeft" type="VBoxContainer" parent="GUI"]
 anchors_preset = -1
@@ -131,5 +152,27 @@ text = "placeholder"
 custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
 theme = ExtResource("2_ogfib")
+value = 50.0
+show_percentage = false
+
+[node name="Control" type="Control" parent="GUI"]
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 20.0
+grow_horizontal = 2
+
+[node name="BossBar" type="ProgressBar" parent="GUI/Control"]
+custom_minimum_size = Vector2(10, 14)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_right = 0.9
+offset_top = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_ogfib")
+theme_override_styles/fill = SubResource("StyleBoxFlat_vgqe0")
+max_value = 1000.0
 value = 50.0
 show_percentage = false

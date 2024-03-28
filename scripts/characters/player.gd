@@ -4,6 +4,8 @@ extends RigidBody3D
 var health:float = 100
 var movement_state = 0
 var jump_cooldown = 0
+var primary_cooldown = 0
+var secondary_cooldown = 0
 var time_delta = 0
 var last_damage = 0
 var last_heal = 0
@@ -28,13 +30,25 @@ var last_heal = 0
 @export var feet_collision:RayCast3D = null
 @export var aim:RayCast3D = null
 @export var feet_area:Area3D = null
-@export var force_area:Area3D = null
+@export var melee_area:Area3D = null
 @export var crouch_timer:Timer = null
+@export var weapons_pivot:Node = null
+@export var sandworm:Node = null
+
 
 @export_category("Damage")
 @export var i_frame:float = 1
 @export var base_health:float = 100
 
+
+class Weapon:
+	var cooldown:float = 0.5
+	var damage:int = 0
+	enum WeaponType {HITSCAN, MELEE, PROJECTILE}
+	var type = WeaponType.HITSCAN
+
+var repuslor = Weapon.new()
+var hammer = Weapon.new()
 
 var movement_speed:float = base_speed
 var knockback_mult:float = base_knockback
@@ -48,11 +62,16 @@ func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _process(delta):
-	pass
+	#pass
+	if weapons_pivot != null:
+		weapons_pivot.global_basis = weapons_pivot.global_basis.slerp(camera.global_basis, delta*50)
+		#weapons_pivot.rotation = lerp(weapons_pivot.rotation, camera.get_global_rotation(), delta*50)
 
 func _physics_process(delta):
 	time_delta = delta
 	jump_cooldown = max(0, jump_cooldown - delta)
+	secondary_cooldown = max(0, secondary_cooldown - delta)
+	primary_cooldown = max(0, primary_cooldown - delta)
 	
 	last_damage += delta
 	last_heal += delta
@@ -70,18 +89,23 @@ func _physics_process(delta):
 	#apply_central_force(Vector3.DOWN * gravity * delta)
 	
 	if Input.is_action_just_pressed("open_instance"):
-		OS.create_instance([])
+		pass
+		#OS.create_instance([])
 	
-	if Input.is_action_just_pressed("primary"):
-		if force_area.has_overlapping_bodies():
-			for object in force_area.get_overlapping_bodies():
+	if Input.is_action_pressed("primary") and primary_cooldown <= 0:
+		primary_cooldown = hammer.cooldown
+		if melee_area.has_overlapping_bodies():
+			for object in melee_area.get_overlapping_bodies():
 				if object is RigidBody3D or object is PhysicalBone3D:
 					var offset = object.get_global_transform().origin - camera.get_global_transform().origin
 					var magnitude = max(0, 10 - offset.length()**1.5 ) * 3.0
 					object.apply_central_impulse(magnitude * offset.normalized())
 					print(object)
+				if object.collision_layer & (1 << 12):
+					sandworm.damage(30)
 				
-	if Input.is_action_just_pressed("secondary"):
+	if Input.is_action_pressed("secondary") and secondary_cooldown <= 0:
+		secondary_cooldown = repuslor.cooldown
 		if aim.is_colliding():
 			var offset = aim.get_collision_point() - camera.get_global_transform().origin
 			var magnitude = max(0, 10 - offset.length()**1.2 ) * 2.8
@@ -92,14 +116,15 @@ func _physics_process(delta):
 			get_tree().root.add_child(a)
 			a.position = aim.get_collision_point()
 			
-			
 	
 	if Input.is_action_pressed("crouch"):
 		#$Standing.disabled = true
 		#$Crouching.disabled = false
 		$Standing.transform.origin.y = -0.25
 		camera_pivot.transform.origin.y = -0.25
-		movement_speed = base_speed / 2
+		weapons_pivot.transform.origin.y = camera_pivot.transform.origin.y
+		
+		movement_speed = base_speed / 3
 		knockback_mult = base_knockback * 1.2
 		self.mass = 1 / knockback_mult
 		movement_state = 1
@@ -111,6 +136,8 @@ func _physics_process(delta):
 		var p = 1 - crouch_timer.time_left / crouch_timer.wait_time
 		$Standing.transform.origin.y = lerp(-0.25, 0.25, p)
 		camera_pivot.transform.origin.y = lerp(-0.25, 0.25, p)
+		weapons_pivot.transform.origin.y = camera_pivot.transform.origin.y
+		
 		movement_speed = base_speed
 		knockback_mult = base_knockback
 		self.mass = knockback_mult
@@ -121,11 +148,16 @@ func _physics_process(delta):
 		#$Crouching.disabled = true
 	#print(velocity * delta)
 	
+	
 	for object in get_colliding_bodies():
 		if object.collision_layer & (1 << 12):
-			damage(30)
+			damage(10)
 			#print(object.collision_layer)
 			#print(1 << 12)
+	
+	
+	if self.global_position.y < -30:
+		damage(100)
 	
 #	print("pos " + str(self.translation))
 	
@@ -236,6 +268,7 @@ func _input(event):
 		camera_pivot.rotation.y += (deg_to_rad(-event.relative.x * mouse_sensitivity))
 		camera.rotate_x(deg_to_rad(-event.relative.y * mouse_sensitivity))
 		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-89), deg_to_rad(89))
+		
 	
 
 func abs_decrease(value:float, rate:float):
@@ -248,9 +281,9 @@ func abs_decrease(value:float, rate:float):
 func damage(hp:float):
 	if last_damage >= i_frame:
 		last_damage = 0
-		health -= hp
+		health = max(0, health - hp)
 
 func heal(hp:float):
 	last_heal = 0
-	health += hp
+	health = min(base_health, health + hp)
 

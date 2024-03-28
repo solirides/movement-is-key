@@ -1,11 +1,12 @@
-[gd_scene load_steps=28 format=3 uid="uid://dq2rbfw18ulbr"]
+[gd_scene load_steps=30 format=3 uid="uid://dq2rbfw18ulbr"]
 
 [ext_resource type="Texture2D" uid="uid://bfmuw33w2yrs2" path="res://icon.png" id="1_55k7m"]
-[ext_resource type="PackedScene" uid="uid://ntfy1qechuoj" path="res://scenes/characters/sandworm.tscn" id="1_bs1lx"]
 [ext_resource type="PackedScene" uid="uid://b7qmlmckh7ity" path="res://scenes/characters/player.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://1qnj20l0da5t" path="res://scenes/characters/enemy.tscn" id="2_cu0sf"]
 [ext_resource type="Texture2D" uid="uid://nnpnsev2ax6t" path="res://assets/textures/levels/64x64.png" id="3"]
 [ext_resource type="Texture2D" uid="uid://c57xcd1waw6y" path="res://assets/environments/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="3_sp7nl"]
+[ext_resource type="Script" path="res://scripts/levels/terrain.gd" id="7_twlrq"]
+[ext_resource type="PackedScene" uid="uid://c7xc3o65hp3oh" path="res://scenes/characters/sandworm_2.tscn" id="8_bhdm2"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_103hx"]
 bounce = 0.5
@@ -64,8 +65,7 @@ refraction_scale = 0.29
 [sub_resource type="StandardMaterial3D" id="7"]
 
 [sub_resource type="StandardMaterial3D" id="10"]
-transparency = 1
-albedo_color = Color(1, 1, 1, 0.686275)
+albedo_color = Color(0.941176, 0.843137, 0.54902, 1)
 albedo_texture = ExtResource("3")
 uv1_triplanar = true
 
@@ -91,7 +91,8 @@ ambient_light_sky_contribution = 0.72
 ambient_light_energy = 0.15
 tonemap_mode = 2
 tonemap_white = 2.22
-glow_enabled = true
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_s3ula"]
 
 [node name="Node3D" type="Node3D"]
 
@@ -99,15 +100,16 @@ glow_enabled = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.42266, -4.00576, 0)
 texture_albedo = ExtResource("1_55k7m")
 
-[node name="sandworm" parent="." node_paths=PackedStringArray("player") instance=ExtResource("1_bs1lx")]
-transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 24.8101, 2.71857, -41.1531)
-player = NodePath("../Player")
-
-[node name="Player" parent="." instance=ExtResource("2")]
+[node name="Player" parent="." node_paths=PackedStringArray("sandworm") instance=ExtResource("2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 16)
+sandworm = NodePath("../Sandworm2")
 
 [node name="Enemy" parent="." instance=ExtResource("2_cu0sf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+
+[node name="Sandworm2" parent="." node_paths=PackedStringArray("player") instance=ExtResource("8_bhdm2")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11.651, -68.1533)
+player = NodePath("../Player")
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.01711, 2, 5.35394)
@@ -190,3 +192,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -1, 5)
 light_color = Color(0.188235, 0.917647, 0.901961, 1)
 shadow_enabled = true
 omni_range = 42.356
+
+[node name="Terrain" type="Node3D" parent="." node_paths=PackedStringArray("sand")]
+script = ExtResource("7_twlrq")
+sand = NodePath("Sand")
+
+[node name="Sand" type="MeshInstance3D" parent="Terrain"]
+mesh = SubResource("ArrayMesh_s3ula")
+skeleton = NodePath("../..")
