@@ -4,8 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://b7qmlmckh7ity" path="res://scenes/characters/player.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://1qnj20l0da5t" path="res://scenes/characters/enemy.tscn" id="2_cu0sf"]
 [ext_resource type="Texture2D" uid="uid://nnpnsev2ax6t" path="res://assets/textures/levels/64x64.png" id="3"]
-[ext_resource type="Texture2D" uid="uid://c57xcd1waw6y" path="res://assets/environments/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="3_sp7nl"]
 [ext_resource type="Script" path="res://scripts/levels/terrain.gd" id="7_twlrq"]
+[ext_resource type="PackedScene" uid="uid://b5e72pii78kei" path="res://scenes/terrain/desert.tscn" id="8_5ll2p"]
 [ext_resource type="PackedScene" uid="uid://c7xc3o65hp3oh" path="res://scenes/characters/sandworm_2.tscn" id="8_bhdm2"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_103hx"]
@@ -77,20 +77,26 @@ size = Vector3(6, 2, 2)
 [sub_resource type="PrismMesh" id="11"]
 size = Vector3(30, 12, 16)
 
-[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_fb1oj"]
-panorama = ExtResource("3_sp7nl")
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_aj645"]
+sky_top_color = Color(0.85098, 0.772549, 0.639216, 1)
+sky_horizon_color = Color(0.8, 0.592157, 0.619608, 1)
+sky_energy_multiplier = 2.0
+ground_bottom_color = Color(0.196078, 0.172549, 0.129412, 1)
+ground_horizon_color = Color(0.490196, 0.462745, 0.372549, 1)
 
 [sub_resource type="Sky" id="Sky_wiqww"]
-sky_material = SubResource("PanoramaSkyMaterial_fb1oj")
+sky_material = SubResource("ProceduralSkyMaterial_aj645")
 
 [sub_resource type="Environment" id="3"]
 background_mode = 2
 sky = SubResource("Sky_wiqww")
 ambient_light_color = Color(0.568627, 0.54902, 0.54902, 1)
-ambient_light_sky_contribution = 0.72
-ambient_light_energy = 0.15
+ambient_light_sky_contribution = 0.0
+ambient_light_energy = 0.0
 tonemap_mode = 2
-tonemap_white = 2.22
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.06
+volumetric_fog_albedo = Color(0.458824, 0.294118, 0.168627, 1)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_s3ula"]
 
@@ -101,14 +107,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.42266, -4.00576, 0)
 texture_albedo = ExtResource("1_55k7m")
 
 [node name="Player" parent="." node_paths=PackedStringArray("sandworm") instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 16)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 405, 16)
 sandworm = NodePath("../Sandworm2")
 
 [node name="Enemy" parent="." instance=ExtResource("2_cu0sf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
 
 [node name="Sandworm2" parent="." node_paths=PackedStringArray("player") instance=ExtResource("8_bhdm2")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11.651, -68.1533)
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 124, 124, -68.153)
 player = NodePath("../Player")
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
@@ -184,7 +190,8 @@ size = Vector3(7, 8, 5)
 environment = SubResource("3")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(0.82087, 0.32155, -0.471993, 0, 0.826442, 0.563021, 0.571115, -0.462167, 0.678402, 0, 11, 0)
+transform = Transform3D(0.869451, 0.431943, -0.239752, 0.0724987, 0.368493, 0.926799, 0.488671, -0.823188, 0.289071, 0, 11, 0)
+light_color = Color(0.619608, 0.219608, 0.172549, 1)
 shadow_enabled = true
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
@@ -200,3 +207,6 @@ sand = NodePath("Sand")
 [node name="Sand" type="MeshInstance3D" parent="Terrain"]
 mesh = SubResource("ArrayMesh_s3ula")
 skeleton = NodePath("../..")
+
+[node name="Desert" parent="." instance=ExtResource("8_5ll2p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -479, 0)

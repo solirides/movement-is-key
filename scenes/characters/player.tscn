@@ -1,9 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://b7qmlmckh7ity"]
+[gd_scene load_steps=17 format=3 uid="uid://b7qmlmckh7ity"]
 
 [ext_resource type="Script" path="res://scripts/characters/player.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/characters/GUI.gd" id="2_cslfr"]
 [ext_resource type="PackedScene" uid="uid://xko8lr7b8c8i" path="res://assets/models/spade/rusted_spade_01_1k.gltf" id="2_leesx"]
 [ext_resource type="Theme" uid="uid://bqcqt4hbus1ph" path="res://assets/themes/bars.tres" id="2_ogfib"]
+[ext_resource type="Script" path="res://scenes/characters/weapons.gd" id="2_vvwka"]
 
 [sub_resource type="PhysicsMaterial" id="4"]
 friction = 0.0
@@ -22,6 +23,68 @@ size = Vector3(3, 3, 5)
 [sub_resource type="CylinderShape3D" id="5"]
 height = 1.0
 radius = 0.2
+
+[sub_resource type="Animation" id="Animation_h4jw5"]
+resource_name = "RESET"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.685056, -0.265956, -0.639858)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.521399, -0.986212, -2.52414)]
+}
+
+[sub_resource type="Animation" id="Animation_j0j0p"]
+resource_name = "swing"
+length = 1.2
+step = 0.025
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.15, 0.25, 0.3, 0.85, 1.1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.685056, -0.265956, -0.639858), Vector3(0.685056, 0.646868, -0.274937), Vector3(0.685056, 0.646868, -0.274937), Vector3(0.645219, -0.284759, -1.15499), Vector3(-0.0621912, -0.5751, -0.511998), Vector3(0.885519, -0.161437, -0.53391), Vector3(0.685056, -0.265956, -0.639858)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.15, 0.25, 0.3, 0.85, 1.1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(-0.521399, -0.986212, -2.52414), Vector3(-0.231035, -1.21769, -3.11204), Vector3(-0.231035, -1.21769, -3.11204), Vector3(-0.854685, -0.949036, -2.15199), Vector3(-1.12121, -2.75769, 0.449949), Vector3(-0.2282, -0.803971, -2.7804), Vector3(-0.521399, -0.986212, -2.52414)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_qac0c"]
+_data = {
+"RESET": SubResource("Animation_h4jw5"),
+"swing": SubResource("Animation_j0j0p")
+}
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_kosy1"]
 blend_mode = 3
@@ -80,7 +143,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot"]
 fov = 100.0
-far = 1000.0
+far = 10000.0
+
+[node name="OmniLight3D" type="OmniLight3D" parent="CameraPivot/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+light_color = Color(0.568627, 0.886275, 1, 1)
 
 [node name="Aim" type="RayCast3D" parent="CameraPivot/Camera3D"]
 target_position = Vector3(0, 0, -200)
@@ -105,10 +172,17 @@ collision_layer = 16
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 shape = SubResource("5")
 
-[node name="WeaponsPivot" type="Node3D" parent="."]
+[node name="WeaponsPivot" type="Node3D" parent="." node_paths=PackedStringArray("primary_animation")]
+script = ExtResource("2_vvwka")
+primary_animation = NodePath("Spade/AnimationPlayer")
 
 [node name="Spade" parent="WeaponsPivot" instance=ExtResource("2_leesx")]
-transform = Transform3D(-1.38089, -0.0383605, -1.44626, -1.21244, -1.06017, 1.18576, -0.789383, 1.69545, 0.708737, 0.685056, -0.428811, -0.639858)
+transform = Transform3D(-1.38089, -0.0383652, -1.44626, -1.00406, -1.41402, 0.996187, -1.04164, 1.41388, 0.957048, 0.685056, -0.265956, -0.639858)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WeaponsPivot/Spade"]
+libraries = {
+"": SubResource("AnimationLibrary_qac0c")
+}
 
 [node name="GUI" type="CanvasLayer" parent="." node_paths=PackedStringArray("health_bar", "boss_bar", "speed", "player")]
 script = ExtResource("2_cslfr")

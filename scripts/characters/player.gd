@@ -94,6 +94,9 @@ func _physics_process(delta):
 	
 	if Input.is_action_pressed("primary") and primary_cooldown <= 0:
 		primary_cooldown = hammer.cooldown
+		
+		weapons_pivot.primary_animation.play("swing")
+		
 		if melee_area.has_overlapping_bodies():
 			for object in melee_area.get_overlapping_bodies():
 				if object is RigidBody3D or object is PhysicalBone3D:
@@ -169,7 +172,7 @@ func _integrate_forces(state):
 	self.physics_material_override.friction = 0
 	
 	# gravity
-	state.linear_velocity.y -= gravity * time_delta * 1
+	state.linear_velocity.y -= gravity * time_delta
 	
 	# on ground
 	if on_ground:
@@ -195,6 +198,7 @@ func _integrate_forces(state):
 		
 		
 		if state.get_contact_local_normal(0).y < 0.9 and state.get_contact_local_normal(0).y > 0.1:
+			pass
 			#self.physics_material_override.friction = 1
 			#apply_central_force(state.get_contact_local_normal(0).rotated(Vector3.UP, deg_to_rad(180)) * 9.7)
 			#apply_central_force(Vector3.UP*9.8)
@@ -203,7 +207,7 @@ func _integrate_forces(state):
 			#state.linear_velocity.x -= state.get_contact_local_normal(0).x * gravity
 			#state.linear_velocity += state.get_contact_local_normal(0) * Vector3(-1, -1, -1)
 			#state.linear_velocity.y = 0
-			print("slope")
+			#print("slope")
 		
 		
 	else:
@@ -242,6 +246,18 @@ func _integrate_forces(state):
 	
 	if on_ground:
 		state.linear_velocity += global_dir * accel
+		var n = state.get_contact_local_normal(0)
+		if n.y < 0.9 and n.y > 0.1:
+			#self.physics_material_override.friction = 1
+			#apply_central_force(state.get_contact_local_normal(0).rotated(Vector3.UP, deg_to_rad(180)) * 9.7)
+			#apply_central_force(Vector3.UP*9.8)
+			apply_central_force(Vector3(-n.x, 1 - n.y, -n.z) * gravity)
+			
+			#state.linear_velocity.z -= state.get_contact_local_normal(0).z * gravity
+			#state.linear_velocity.x -= state.get_contact_local_normal(0).x * gravity
+			#state.linear_velocity += state.get_contact_local_normal(0) * Vector3(-1, -1, -1)
+			#state.linear_velocity.y = 0
+			print("slope")
 	else:
 		state.linear_velocity += global_dir * accel * air_control
 	

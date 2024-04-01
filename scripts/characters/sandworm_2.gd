@@ -17,11 +17,13 @@ var head:PhysicalBone3D = null
 @export var max_speed:float = 30
 
 var last_damage = 0
+var last_attack = 0
 var last_heal = 0
 var health:float = 1000
 
 @export_category("Damage")
 @export var i_frame:float = 1
+@export var attack_cooldown:float = 1.4
 @export var base_health:float = 1000
 
 enum State {ATTACK, RETREAT, TRACK}
@@ -63,8 +65,9 @@ func _ready():
 
 func recursive(node):
 	if node is CollisionShape3D:
-		node.shape.radius *= 3
-		node.shape.height *= 1
+		pass
+		#node.shape.radius *= 3.0
+		#node.shape.height *= 1
 		#node.rotation.x = 0
 		#node.body_offset *= 5
 		#node.scale *= 5
@@ -74,10 +77,10 @@ func recursive(node):
 
 func _physics_process(delta):
 	last_damage += delta
+	last_attack += delta
 	last_heal += delta
 	
 	state_time += delta
-	gravity = 2
 	
 	if is_underground() and false:
 		print("boost")
@@ -138,16 +141,19 @@ func _physics_process(delta):
 	
 	#rotation_diff = (t * current.basis.inverse()).get_euler()
 	#head.angular_velocity += delta * (rotation_diff * 10 - bone.angular_velocity * damping)
-	
+	gravity = 2
 	var t0 = Basis()
 	
-	match current_state:
+	#current_state
+	match State.ATTACK:
 		State.ATTACK:
 			gravity = 0
-			core.apply_central_impulse((player.global_position - core.global_position).normalized() * 10.0)
-			t0 = Basis.looking_at(player.global_transform.origin - ref_pivot.global_transform.origin)
+			#core.apply_central_impulse((player.global_position - core.global_position).normalized() * 8.0)
+			#t0 = Basis.looking_at(player.global_transform.origin - ref_pivot.global_transform.origin)
+			var a = (player.global_transform.origin - ref_pivot.global_transform.origin).rotated(Vector3(0,1,0), PI/2)
+			t0 = Basis.looking_at(Vector3(a.x, a.y, a.z), Vector3(1,0,0), false)
 			
-			if state_time > 7:
+			if state_time > 20:
 				state_time = 0
 				current_state = State.RETREAT
 		State.RETREAT:
@@ -164,17 +170,23 @@ func _physics_process(delta):
 			core.apply_central_impulse(signf(-14 - core.global_position.y) * Vector3(0, 1, 0) * 3)
 			t0 = Basis.looking_at(player.global_transform.origin - ref_pivot.global_transform.origin)
 			
-			if state_time > 8:
+			if state_time > 12:
 				state_time = 0
 				current_state = State.ATTACK
 	
-	ref_pivot.basis = ref_pivot.basis.slerp(t0, delta * 1.0)
+	gravity = 0
+	ref_pivot.basis = ref_pivot.basis.slerp(t0, delta * 5.0)
+	#ref_pivot.basis = core.basis
 	
 	print(current_state)
 	
-	for node in damage_area.get_overlapping_bodies():
-		if node.is_in_group("characters"):
-			node.damage(30)
+	if current_state == State.ATTACK and last_attack >= attack_cooldown:
+		for node in damage_area.get_overlapping_bodies():
+			if node.is_in_group("characters"):
+				node.damage(30)
+				last_attack = 0
+				if randf() > 0.8:
+					current_state = State.RETREAT
 	
 
 func is_underground():
