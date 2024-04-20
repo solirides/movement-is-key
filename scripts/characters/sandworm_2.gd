@@ -11,6 +11,8 @@ var head:PhysicalBone3D = null
 @export var skeleton:Skeleton3D = null
 @export var ref_pivot:Node3D = null
 @export var damage_area:Area3D = null
+@export var attack_area:Area3D = null
+@export var raycast:RayCast3D = null
 
 @export var stiffness:float = 1
 @export var damping:float = 1
@@ -22,11 +24,11 @@ var last_heal = 0
 var health:float = 1000
 
 @export_category("Damage")
-@export var i_frame:float = 1
+@export var i_frame:float = 0.1
 @export var attack_cooldown:float = 1.4
 @export var base_health:float = 1000
 
-enum State {ATTACK, RETREAT, TRACK}
+enum State {ATTACK, RETREAT, TRACK, EMERGE}
 
 var current_state = State.ATTACK
 var state_time = 0
@@ -145,48 +147,73 @@ func _physics_process(delta):
 	var t0 = Basis()
 	
 	#current_state
-	match State.ATTACK:
+	match current_state:
 		State.ATTACK:
-			gravity = 0
-			#core.apply_central_impulse((player.global_position - core.global_position).normalized() * 8.0)
+			gravity = 1
+			core.apply_central_impulse((player.global_position - core.global_position).normalized() * 8.0)
 			#t0 = Basis.looking_at(player.global_transform.origin - ref_pivot.global_transform.origin)
 			var a = (player.global_transform.origin - ref_pivot.global_transform.origin).rotated(Vector3(0,1,0), PI/2)
 			t0 = Basis.looking_at(Vector3(a.x, a.y, a.z), Vector3(1,0,0), false)
 			
-			if state_time > 20:
+			if state_time > 14:
 				state_time = 0
 				current_state = State.RETREAT
 		State.RETREAT:
-			gravity = 2
-			core.apply_central_impulse(signf(-20 - core.global_position.y) * Vector3(0, 1, 0) * 6)
+			gravity = 4
+			# signf(-50 - core.global_position.y)
+			core.apply_central_impulse(Vector3(0, -1, 0) * 80.0)
 			t0 = Basis.looking_at(Vector3(0,-1,0), Vector3(1, 0, 0))
 			
-			if state_time > 4 and is_underground():
+			if (state_time > 4 and is_underground()):
 				state_time = 0
 				current_state = State.TRACK
 		State.TRACK:
 			gravity = 1
-			core.apply_central_impulse((player.global_position - core.global_position).normalized() * Vector3(10, 0, 10))
+			core.apply_central_impulse((player.global_position - core.global_position) * Vector3(4, 0, 4))
 			core.apply_central_impulse(signf(-14 - core.global_position.y) * Vector3(0, 1, 0) * 3)
 			t0 = Basis.looking_at(player.global_transform.origin - ref_pivot.global_transform.origin)
 			
-			if state_time > 12:
+			var d = Vector2.ZERO.distance_to(Vector2(player.global_transform.origin.x - ref_pivot.global_transform.origin.x, player.global_transform.origin.z - ref_pivot.global_transform.origin.z))
+			
+			#print(d)
+			if state_time > 5 and d < 30:
+				state_time = 0
+				current_state = State.EMERGE
+		State.EMERGE:
+			gravity = 0
+			core.apply_central_impulse(Vector3(0, 1, 0) * 60.0)
+			t0 = Basis.looking_at(Vector3(0,1,0), Vector3(1, 0, 0))
+			
+			var d = player.global_transform.origin.y - ref_pivot.global_transform.origin.y
+			
+			if d < -10:
 				state_time = 0
 				current_state = State.ATTACK
 	
-	gravity = 0
+	#gravity = 0
 	ref_pivot.basis = ref_pivot.basis.slerp(t0, delta * 5.0)
 	#ref_pivot.basis = core.basis
 	
 	print(current_state)
 	
 	if current_state == State.ATTACK and last_attack >= attack_cooldown:
-		for node in damage_area.get_overlapping_bodies():
+		var attacked = false
+		for node in attack_area.get_overlapping_bodies():
 			if node.is_in_group("characters"):
-				node.damage(30)
+				var a = (core.global_transform.basis.z.normalized() + Vector3(0,-0.2,0)).normalized()
+				node.apply_central_impulse(a * -70.0)
+				node.damage(50)
 				last_attack = 0
-				if randf() > 0.8:
-					current_state = State.RETREAT
+				attacked = true
+				break
+		if not attacked:
+			for node in damage_area.get_overlapping_bodies():
+				if node.is_in_group("characters"):
+					node.damage(30)
+					last_attack = 0
+					if randf() > 0.9:
+						current_state = State.RETREAT
+					break
 	
 
 func is_underground():

@@ -1,10 +1,11 @@
-[gd_scene load_steps=30 format=3 uid="uid://dq2rbfw18ulbr"]
+[gd_scene load_steps=31 format=3 uid="uid://dq2rbfw18ulbr"]
 
 [ext_resource type="Texture2D" uid="uid://bfmuw33w2yrs2" path="res://icon.png" id="1_55k7m"]
 [ext_resource type="PackedScene" uid="uid://b7qmlmckh7ity" path="res://scenes/characters/player.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://1qnj20l0da5t" path="res://scenes/characters/enemy.tscn" id="2_cu0sf"]
 [ext_resource type="Texture2D" uid="uid://nnpnsev2ax6t" path="res://assets/textures/levels/64x64.png" id="3"]
 [ext_resource type="Script" path="res://scripts/levels/terrain.gd" id="7_twlrq"]
+[ext_resource type="PackedScene" uid="uid://bara7s78fst3m" path="res://scenes/objects/croissant.tscn" id="8_4u337"]
 [ext_resource type="PackedScene" uid="uid://b5e72pii78kei" path="res://scenes/terrain/desert.tscn" id="8_5ll2p"]
 [ext_resource type="PackedScene" uid="uid://c7xc3o65hp3oh" path="res://scenes/characters/sandworm_2.tscn" id="8_bhdm2"]
 
@@ -107,14 +108,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.42266, -4.00576, 0)
 texture_albedo = ExtResource("1_55k7m")
 
 [node name="Player" parent="." node_paths=PackedStringArray("sandworm") instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 405, 16)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 143.622, 107.46, 16)
 sandworm = NodePath("../Sandworm2")
 
 [node name="Enemy" parent="." instance=ExtResource("2_cu0sf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
 
 [node name="Sandworm2" parent="." node_paths=PackedStringArray("player") instance=ExtResource("8_bhdm2")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 124, 124, -68.153)
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 124, 132.796, -68.153)
 player = NodePath("../Player")
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
@@ -191,7 +192,8 @@ environment = SubResource("3")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
 transform = Transform3D(0.869451, 0.431943, -0.239752, 0.0724987, 0.368493, 0.926799, 0.488671, -0.823188, 0.289071, 0, 11, 0)
-light_color = Color(0.619608, 0.219608, 0.172549, 1)
+light_color = Color(0.619608, 0.45098, 0.435294, 1)
+light_energy = 2.0
 shadow_enabled = true
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
@@ -210,3 +212,6 @@ skeleton = NodePath("../..")
 
 [node name="Desert" parent="." instance=ExtResource("8_5ll2p")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -479, 0)
+
+[node name="Croissant" parent="." instance=ExtResource("8_4u337")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 134.912, 111.242, 0)

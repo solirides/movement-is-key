@@ -1,7 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://c7xc3o65hp3oh"]
 
 [ext_resource type="Script" path="res://scripts/characters/sandworm_2.gd" id="1_8ew22"]
-[ext_resource type="PackedScene" uid="uid://d4ism3qddfk8y" path="res://scenes/characters/sandworm_model_3.1.tscn" id="2_6abx3"]
 [ext_resource type="PackedScene" uid="uid://dv4xg15gdreb0" path="res://scenes/characters/sandworm_model.tscn" id="3_t0siw"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e7aqg"]
@@ -11,20 +10,22 @@ albedo_color = Color(1, 0.180392, 0.121569, 1)
 albedo_color = Color(0.576471, 1, 0.121569, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ln33b"]
-radius = 4.0
-height = 16.0
+radius = 20.0
+height = 46.0
 
-[node name="Sandworm2" type="Node3D" node_paths=PackedStringArray("reference", "skeleton", "ref_pivot", "damage_area") groups=["characters"]]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ocf3q"]
+radius = 20.0
+height = 58.0
+
+[node name="Sandworm2" type="Node3D" node_paths=PackedStringArray("reference", "skeleton", "ref_pivot", "damage_area", "attack_area", "raycast") groups=["characters"]]
 script = ExtResource("1_8ew22")
 reference = NodePath("Node3D/ReferencePivot/Skeleton3D2")
 skeleton = NodePath("Skeleton3D")
 ref_pivot = NodePath("Node3D/ReferencePivot")
 damage_area = NodePath("BoneAttachment3D/Damage")
-stiffness = 2.0
-max_speed = 100.0
-
-[node name="Main" parent="." instance=ExtResource("2_6abx3")]
-visible = false
+attack_area = NodePath("BoneAttachment3D/Area3D")
+raycast = NodePath("BoneAttachment3D/RayCast3D")
+max_speed = 500.0
 
 [node name="Skeleton3D" parent="." instance=ExtResource("3_t0siw")]
 
@@ -45,24 +46,20 @@ visible = false
 radius = 3.0
 material = SubResource("StandardMaterial3D_ef7d6")
 
-[node name="Reference" parent="Node3D/ReferencePivot" instance=ExtResource("2_6abx3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 48)
-visible = false
-
 [node name="Skeleton3D2" parent="Node3D/ReferencePivot" instance=ExtResource("3_t0siw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.10551e-25, -2.36041e-06, 192)
 visible = false
 
 [node name="BoneAttachment3D" type="BoneAttachment3D" parent="."]
-transform = Transform3D(1, -4.03897e-27, 0, 0, -4.26327e-14, 1, -3.73605e-27, -1, -4.26327e-14, -1.01023e-24, 9.44165e-06, -192)
+transform = Transform3D(1, -4.03897e-27, -8.60958e-41, -2.15239e-42, -4.26327e-14, 1, -3.73605e-27, -1, -4.26327e-14, -1.01023e-24, 9.44165e-06, -192)
 bone_name = "Bone.007"
 bone_idx = 13
 use_external_skeleton = true
 external_skeleton = NodePath("../Skeleton3D")
 
 [node name="Damage" type="Area3D" parent="BoneAttachment3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
-collision_layer = 0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.92184e-26, 24.5653, 9.09495e-13)
+collision_layer = 4096
 collision_mask = 256
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BoneAttachment3D/Damage"]
@@ -72,3 +69,15 @@ shape = SubResource("CapsuleShape3D_ln33b")
 remote_path = NodePath("../../Node3D")
 update_rotation = false
 update_scale = false
+
+[node name="Area3D" type="Area3D" parent="BoneAttachment3D"]
+collision_layer = 0
+collision_mask = 256
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoneAttachment3D/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.25067e-26, 13, 9.09495e-13)
+shape = SubResource("CapsuleShape3D_ocf3q")
+
+[node name="RayCast3D" type="RayCast3D" parent="BoneAttachment3D"]
+target_position = Vector3(0, 1000, 0)
+collision_mask = 0

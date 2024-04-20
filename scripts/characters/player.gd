@@ -38,11 +38,11 @@ var last_heal = 0
 
 @export_category("Damage")
 @export var i_frame:float = 1
-@export var base_health:float = 100
+@export var base_health:float = 140
 
 
 class Weapon:
-	var cooldown:float = 0.5
+	var cooldown:float = 1.1
 	var damage:int = 0
 	enum WeaponType {HITSCAN, MELEE, PROJECTILE}
 	var type = WeaponType.HITSCAN
@@ -75,7 +75,7 @@ func _physics_process(delta):
 	
 	last_damage += delta
 	last_heal += delta
-	if last_damage > 4 and last_heal > 0.2:
+	if last_damage > 9 and last_heal > 1:
 		heal(1)
 	
 #	velocity = lerp(velocity * delta, velocity, acceleration_speed * delta)
@@ -97,6 +97,7 @@ func _physics_process(delta):
 		
 		weapons_pivot.primary_animation.play("swing")
 		
+		
 		if melee_area.has_overlapping_bodies():
 			for object in melee_area.get_overlapping_bodies():
 				if object is RigidBody3D or object is PhysicalBone3D:
@@ -106,6 +107,7 @@ func _physics_process(delta):
 					print(object)
 				if object.collision_layer & (1 << 12):
 					sandworm.damage(30)
+					weapons_pivot.primary_weapon.get_node("Hit").play()
 				
 	if Input.is_action_pressed("secondary") and secondary_cooldown <= 0:
 		secondary_cooldown = repuslor.cooldown

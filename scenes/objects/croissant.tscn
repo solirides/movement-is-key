@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://bara7s78fst3m"]
+
+[ext_resource type="PackedScene" uid="uid://273lyysqvjln" path="res://assets/models/croissant/croissant_1k.gltf" id="1_3lw0o"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_y7lmi"]
+radius = 0.316976
+height = 1.32912
+
+[node name="Croissant" type="RigidBody3D"]
+collision_mask = 4353
+
+[node name="croissant_1k" parent="." instance=ExtResource("1_3lw0o")]
+transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 6, 0, -0.103035, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("CapsuleShape3D_y7lmi")
