@@ -4,6 +4,7 @@ extends CanvasLayer
 @export var health_bar:ProgressBar = null
 @export var boss_bar:ProgressBar = null
 @export var speed:Label = null
+@export var game_over:Node = null
 @export var player:RigidBody3D = null
 
 func _ready():
@@ -16,4 +17,5 @@ func _process(delta):
 	boss_bar.value = player.sandworm.health
 	#print(player.sandworm.health)
 	speed.text = "speed: " + str(floor(player.linear_velocity.length()))
-	
+
+

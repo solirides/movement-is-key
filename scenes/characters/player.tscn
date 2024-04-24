@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://b7qmlmckh7ity"]
+[gd_scene load_steps=24 format=3 uid="uid://b7qmlmckh7ity"]
 
 [ext_resource type="Script" path="res://scripts/characters/player.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/characters/GUI.gd" id="2_cslfr"]
@@ -97,7 +97,37 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="Player" type="RigidBody3D" node_paths=PackedStringArray("camera_pivot", "camera", "feet_collision", "aim", "feet_area", "melee_area", "crouch_timer", "weapons_pivot") groups=["characters"]]
+[sub_resource type="Gradient" id="Gradient_rv31w"]
+offsets = PackedFloat32Array(0.512712, 0.591102, 1)
+colors = PackedColorArray(0.00217328, 0.000213395, 0.000126901, 1, 0.121052, 0.0401521, 0.0206259, 1, 0.124784, 0.0414057, 0.0212694, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_n04n0"]
+frequency = 0.3786
+fractal_octaves = 3
+fractal_lacunarity = 7.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_gy1pk"]
+width = 1024
+height = 1024
+color_ramp = SubResource("Gradient_rv31w")
+noise = SubResource("FastNoiseLite_n04n0")
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_epqy7"]
+
+[sub_resource type="SystemFont" id="SystemFont_o5ihr"]
+font_names = PackedStringArray("Hack", "Consolas", "Monospace")
+font_weight = 600
+subpixel_positioning = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_1r4no"]
+font = SubResource("SystemFont_o5ihr")
+font_size = 60
+font_color = Color(0.568627, 0.129412, 0.227451, 0.729412)
+shadow_size = 20
+shadow_color = Color(0, 0, 0, 0.862745)
+shadow_offset = Vector2(10, 10)
+
+[node name="Player" type="RigidBody3D" node_paths=PackedStringArray("camera_pivot", "camera", "feet_collision", "aim", "feet_area", "melee_area", "crouch_timer", "weapons_pivot", "gui") groups=["characters"]]
 collision_layer = 256
 collision_mask = 4097
 collision_priority = 10.0
@@ -120,6 +150,7 @@ feet_area = NodePath("FeetArea")
 melee_area = NodePath("CameraPivot/Camera3D/MeleeArea")
 crouch_timer = NodePath("CrouchTimer")
 weapons_pivot = NodePath("WeaponsPivot")
+gui = NodePath("GUI")
 
 [node name="CrouchTimer" type="Timer" parent="."]
 process_callback = 0
@@ -189,11 +220,12 @@ libraries = {
 [node name="Hit" type="AudioStreamPlayer" parent="WeaponsPivot/Spade"]
 stream = ExtResource("4_msa3s")
 
-[node name="GUI" type="CanvasLayer" parent="." node_paths=PackedStringArray("health_bar", "boss_bar", "speed", "player")]
+[node name="GUI" type="CanvasLayer" parent="." node_paths=PackedStringArray("health_bar", "boss_bar", "speed", "game_over", "player")]
 script = ExtResource("2_cslfr")
 health_bar = NodePath("BottomLeft/HealthBar")
 boss_bar = NodePath("Control/BossBar")
 speed = NodePath("BottomLeft/Speed")
+game_over = NodePath("GameOver")
 player = NodePath("..")
 
 [node name="Crosshair" type="ColorRect" parent="GUI"]
@@ -255,3 +287,34 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_vgqe0")
 max_value = 1000.0
 value = 50.0
 show_percentage = false
+
+[node name="GameOver" type="Control" parent="GUI"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="GUI/GameOver"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("NoiseTexture2D_gy1pk")
+
+[node name="RichTextLabel" type="Label" parent="GUI/GameOver"]
+material = SubResource("CanvasItemMaterial_epqy7")
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "bro u died"
+label_settings = SubResource("LabelSettings_1r4no")
+horizontal_alignment = 1
+vertical_alignment = 1

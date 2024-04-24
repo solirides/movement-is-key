@@ -21,14 +21,14 @@ var head:PhysicalBone3D = null
 var last_damage = 0
 var last_attack = 0
 var last_heal = 0
-var health:float = 1000
+var health:float = 10
 
 @export_category("Damage")
 @export var i_frame:float = 0.1
 @export var attack_cooldown:float = 1.4
 @export var base_health:float = 1000
 
-enum State {ATTACK, RETREAT, TRACK, EMERGE}
+enum State {ATTACK, RETREAT, TRACK, EMERGE, DISAPPEAR}
 
 var current_state = State.ATTACK
 var state_time = 0
@@ -189,6 +189,9 @@ func _physics_process(delta):
 			if d < -10:
 				state_time = 0
 				current_state = State.ATTACK
+		State.DISAPPEAR:
+			gravity = 4
+			skeleton.physical_bones_stop_simulation()
 	
 	#gravity = 0
 	ref_pivot.basis = ref_pivot.basis.slerp(t0, delta * 5.0)
@@ -225,6 +228,10 @@ func damage(hp:float):
 	if last_damage >= i_frame:
 		last_damage = 0
 		health = max(0, health - hp)
+		
+		if health == 0:
+			current_state = State.DISAPPEAR
+			state_time = 0
 
 func heal(hp:float):
 	last_heal = 0

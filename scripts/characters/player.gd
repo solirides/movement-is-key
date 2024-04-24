@@ -33,6 +33,7 @@ var last_heal = 0
 @export var melee_area:Area3D = null
 @export var crouch_timer:Timer = null
 @export var weapons_pivot:Node = null
+@export var gui:Node = null
 @export var sandworm:Node = null
 
 
@@ -54,6 +55,7 @@ var movement_speed:float = base_speed
 var knockback_mult:float = base_knockback
 
 var explosion = preload("res://scenes/objects/explosion.tscn")
+var croissant = preload("res://scenes/objects/croissant.tscn")
 
 func _ready():
 #	self.set_can_sleep(false)
@@ -120,7 +122,17 @@ func _physics_process(delta):
 			var a = explosion.instantiate()
 			get_tree().root.add_child(a)
 			a.position = aim.get_collision_point()
+	
+	if Input.is_action_pressed("interact"):
+		var a = croissant.instantiate()
+		get_tree().root.add_child(a)
+		#if aim.is_colliding():
+			#a.position = aim.get_collision_point() + 3 * (aim.get_collision_point() - self.global_position).normalized()
+		#else:
+			#a.position = aim.target_position
 			
+		a.position = camera.global_position + 1 * (aim.get_collision_point() - self.global_position).normalized()
+		a.apply_impulse(30 * (aim.get_collision_point() - self.global_position).normalized())
 	
 	if Input.is_action_pressed("crouch"):
 		#$Standing.disabled = true
@@ -300,6 +312,13 @@ func damage(hp:float):
 	if last_damage >= i_frame:
 		last_damage = 0
 		health = max(0, health - hp)
+		
+		if health == 0:
+			gui.game_over.visible = true
+			sandworm.current_state = sandworm.State.DISAPPEAR
+			weapons_pivot.primary_weapon.get_node("Hit").volume_db = 12
+			weapons_pivot.primary_weapon.get_node("Hit").play()
+		
 
 func heal(hp:float):
 	last_heal = 0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://dq2rbfw18ulbr"]
+[gd_scene load_steps=35 format=3 uid="uid://dq2rbfw18ulbr"]
 
 [ext_resource type="Texture2D" uid="uid://bfmuw33w2yrs2" path="res://icon.png" id="1_55k7m"]
 [ext_resource type="PackedScene" uid="uid://b7qmlmckh7ity" path="res://scenes/characters/player.tscn" id="2"]
@@ -100,6 +100,21 @@ volumetric_fog_density = 0.06
 volumetric_fog_albedo = Color(0.458824, 0.294118, 0.168627, 1)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_s3ula"]
+
+[sub_resource type="Gradient" id="Gradient_rjswu"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0, 0.568965)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_y25mk"]
+
+[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_7k7ej"]
+color_ramp = SubResource("Gradient_rjswu")
+noise = SubResource("FastNoiseLite_y25mk")
+
+[sub_resource type="FogMaterial" id="FogMaterial_5a47m"]
+density = 0.3
+albedo = Color(0.784314, 0.639216, 0.580392, 1)
+density_texture = SubResource("NoiseTexture3D_7k7ej")
 
 [node name="Node3D" type="Node3D"]
 
@@ -215,3 +230,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -479, 0)
 
 [node name="Croissant" parent="." instance=ExtResource("8_4u337")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 134.912, 111.242, 0)
+
+[node name="FogVolume" type="FogVolume" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79.8159, 90.9428, -4.30663)
+visible = false
+shape = 4
+material = SubResource("FogMaterial_5a47m")
