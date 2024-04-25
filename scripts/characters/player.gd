@@ -315,7 +315,8 @@ func damage(hp:float):
 		
 		if health == 0:
 			gui.game_over.visible = true
-			sandworm.current_state = sandworm.State.DISAPPEAR
+			#sandworm.current_state = sandworm.State.DISAPPEAR
+			#sandworm.state_time = 0
 			weapons_pivot.primary_weapon.get_node("Hit").volume_db = 12
 			weapons_pivot.primary_weapon.get_node("Hit").play()
 		

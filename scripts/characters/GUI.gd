@@ -14,7 +14,8 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	health_bar.value = player.health
-	boss_bar.value = player.sandworm.health
+	if player.sandworm != null:
+		boss_bar.value = player.sandworm.health
 	#print(player.sandworm.health)
 	speed.text = "speed: " + str(floor(player.linear_velocity.length()))
 

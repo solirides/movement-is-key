@@ -21,7 +21,7 @@ var head:PhysicalBone3D = null
 var last_damage = 0
 var last_attack = 0
 var last_heal = 0
-var health:float = 10
+var health:float = 1000
 
 @export_category("Damage")
 @export var i_frame:float = 0.1
@@ -191,7 +191,9 @@ func _physics_process(delta):
 				current_state = State.ATTACK
 		State.DISAPPEAR:
 			gravity = 4
-			skeleton.physical_bones_stop_simulation()
+			if state_time > 5:
+				skeleton.physical_bones_stop_simulation()
+				self.queue_free()
 	
 	#gravity = 0
 	ref_pivot.basis = ref_pivot.basis.slerp(t0, delta * 5.0)
