@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://b7qmlmckh7ity"]
+[gd_scene load_steps=29 format=3 uid="uid://b7qmlmckh7ity"]
 
 [ext_resource type="Script" path="res://scripts/characters/player.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/characters/GUI.gd" id="2_cslfr"]
@@ -6,6 +6,7 @@
 [ext_resource type="Theme" uid="uid://bqcqt4hbus1ph" path="res://assets/themes/bars.tres" id="2_ogfib"]
 [ext_resource type="Script" path="res://scenes/characters/weapons.gd" id="2_vvwka"]
 [ext_resource type="AudioStream" uid="uid://co54fh1nqda78" path="res://assets/sounds/that_sound.wav" id="4_msa3s"]
+[ext_resource type="Texture2D" uid="uid://d3bpckf272c7s" path="res://assets/textures/cookie.png" id="7_8fv5l"]
 
 [sub_resource type="PhysicsMaterial" id="4"]
 friction = 0.0
@@ -114,6 +115,19 @@ noise = SubResource("FastNoiseLite_n04n0")
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_epqy7"]
 
+[sub_resource type="SystemFont" id="SystemFont_2bh6t"]
+font_names = PackedStringArray("Hack", "Consolas", "Monospace")
+font_weight = 600
+subpixel_positioning = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_1pesu"]
+font = SubResource("SystemFont_2bh6t")
+font_size = 60
+font_color = Color(0.568627, 0.129412, 0.227451, 0.729412)
+shadow_size = 20
+shadow_color = Color(0, 0, 0, 0.862745)
+shadow_offset = Vector2(10, 10)
+
 [sub_resource type="SystemFont" id="SystemFont_o5ihr"]
 font_names = PackedStringArray("Hack", "Consolas", "Monospace")
 font_weight = 600
@@ -122,10 +136,20 @@ subpixel_positioning = 0
 [sub_resource type="LabelSettings" id="LabelSettings_1r4no"]
 font = SubResource("SystemFont_o5ihr")
 font_size = 60
-font_color = Color(0.568627, 0.129412, 0.227451, 0.729412)
+font_color = Color(0, 0.989537, 0.831288, 0.858824)
 shadow_size = 20
-shadow_color = Color(0, 0, 0, 0.862745)
+shadow_color = Color(0, 0, 0, 0.215686)
 shadow_offset = Vector2(10, 10)
+
+[sub_resource type="SystemFont" id="SystemFont_iy4hf"]
+font_names = PackedStringArray("Hack", "Consolas", "Monospace")
+font_weight = 600
+subpixel_positioning = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_auh3t"]
+font = SubResource("SystemFont_iy4hf")
+font_size = 40
+font_color = Color(1, 1, 1, 0.858824)
 
 [node name="Player" type="RigidBody3D" node_paths=PackedStringArray("camera_pivot", "camera", "feet_collision", "aim", "feet_area", "melee_area", "crouch_timer", "weapons_pivot", "gui") groups=["characters"]]
 collision_layer = 256
@@ -220,12 +244,13 @@ libraries = {
 [node name="Hit" type="AudioStreamPlayer" parent="WeaponsPivot/Spade"]
 stream = ExtResource("4_msa3s")
 
-[node name="GUI" type="CanvasLayer" parent="." node_paths=PackedStringArray("health_bar", "boss_bar", "speed", "game_over", "player")]
+[node name="GUI" type="CanvasLayer" parent="." node_paths=PackedStringArray("health_bar", "boss_bar", "speed", "game_over", "victory", "player")]
 script = ExtResource("2_cslfr")
 health_bar = NodePath("BottomLeft/HealthBar")
 boss_bar = NodePath("Control/BossBar")
 speed = NodePath("BottomLeft/Speed")
 game_over = NodePath("GameOver")
+victory = NodePath("Victory")
 player = NodePath("..")
 
 [node name="Crosshair" type="ColorRect" parent="GUI"]
@@ -315,6 +340,54 @@ anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 text = "bro u died"
+label_settings = SubResource("LabelSettings_1pesu")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Victory" type="Control" parent="GUI"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="Label" parent="GUI/Victory"]
+material = SubResource("CanvasItemMaterial_epqy7")
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "You Win!"
 label_settings = SubResource("LabelSettings_1r4no")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="RichTextLabel2" type="Label" parent="GUI/Victory"]
+material = SubResource("CanvasItemMaterial_epqy7")
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Have a cookie"
+label_settings = SubResource("LabelSettings_auh3t")
+horizontal_alignment = 1
+
+[node name="Cookie" type="TextureRect" parent="GUI/Victory"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.34
+anchor_top = 0.39
+anchor_right = 0.846
+anchor_bottom = 1.051
+offset_left = 0.320007
+offset_top = 0.279984
+offset_right = 0.407959
+offset_bottom = -0.0479736
+texture = ExtResource("7_8fv5l")

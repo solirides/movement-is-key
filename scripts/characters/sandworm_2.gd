@@ -33,6 +33,8 @@ enum State {ATTACK, RETREAT, TRACK, EMERGE, DISAPPEAR}
 var current_state = State.ATTACK
 var state_time = 0
 
+signal died
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	#skeleton.scale *= 5
@@ -234,6 +236,8 @@ func damage(hp:float):
 		if health == 0:
 			current_state = State.DISAPPEAR
 			state_time = 0
+			
+			died.emit()
 
 func heal(hp:float):
 	last_heal = 0

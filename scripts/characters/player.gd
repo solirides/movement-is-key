@@ -57,9 +57,12 @@ var knockback_mult:float = base_knockback
 var explosion = preload("res://scenes/objects/explosion.tscn")
 var croissant = preload("res://scenes/objects/croissant.tscn")
 
+var projectiles = []
+
 func _ready():
 #	self.set_can_sleep(false)
 	
+	sandworm.died.connect(somehow_win_the_game)
 	
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
@@ -90,8 +93,8 @@ func _physics_process(delta):
 #	print(feet_collision.is_colliding()
 	#apply_central_force(Vector3.DOWN * gravity * delta)
 	
-	if Input.is_action_just_pressed("open_instance"):
-		pass
+	#if Input.is_action_just_pressed("open_instance"):
+		#pass
 		#OS.create_instance([])
 	
 	if Input.is_action_pressed("primary") and primary_cooldown <= 0:
@@ -125,7 +128,13 @@ func _physics_process(delta):
 	
 	if Input.is_action_pressed("interact"):
 		var a = croissant.instantiate()
+		projectiles.push_back(a)
 		get_tree().root.add_child(a)
+		
+		if len(projectiles) > 20:
+			var node = projectiles.pop_front()
+			node.queue_free()
+		
 		#if aim.is_colliding():
 			#a.position = aim.get_collision_point() + 3 * (aim.get_collision_point() - self.global_position).normalized()
 		#else:
@@ -319,9 +328,31 @@ func damage(hp:float):
 			#sandworm.state_time = 0
 			weapons_pivot.primary_weapon.get_node("Hit").volume_db = 12
 			weapons_pivot.primary_weapon.get_node("Hit").play()
+			
+			var timer = Timer.new()
+			timer.wait_time = 3.0
+			timer.one_shot = true
+			timer.autostart = true
+			self.add_child(timer)
+			timer.timeout.connect(make_the_game_not_exist)
+			
+			
 		
 
 func heal(hp:float):
 	last_heal = 0
 	health = min(base_health, health + hp)
 
+func make_the_game_not_exist():
+	#get_tree().quit()
+	get_tree().change_scene_to_file("res://modules/title_screen/title_screen.tscn")
+
+func somehow_win_the_game():
+	gui.victory.visible = true
+	
+	var timer = Timer.new()
+	timer.wait_time = 10.0
+	timer.one_shot = true
+	timer.autostart = true
+	self.add_child(timer)
+	timer.timeout.connect(make_the_game_not_exist)

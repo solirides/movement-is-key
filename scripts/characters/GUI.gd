@@ -5,6 +5,7 @@ extends CanvasLayer
 @export var boss_bar:ProgressBar = null
 @export var speed:Label = null
 @export var game_over:Node = null
+@export var victory:Node = null
 @export var player:RigidBody3D = null
 
 func _ready():

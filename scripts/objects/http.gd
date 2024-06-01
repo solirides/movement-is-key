@@ -5,7 +5,6 @@ func _ready():
 	# Create an HTTP request node and connect its completion signal.
 	#download()
 	print(OS.get_executable_path())
-	#var pid = OS.execute("godot", ["--path \"/home/fish/Documents/GitHub/mechcraft2/\""])
 
 
 func download():
